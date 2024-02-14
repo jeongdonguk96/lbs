@@ -34,8 +34,9 @@ public class RedisRepository {
 
         timeDiff = (endTime - startTime);
         transactionTime = timeDiff / 1000.0;
-        System.out.println("========== TRX TIME = { " + transactionTime + "}s ==========");
+        System.out.println("id = " + id + ", ========== REDIS TRX TIME = { " + transactionTime + "}s ==========");
         System.out.println("redis result = " + result);
+        System.out.println();
     }
 
 }

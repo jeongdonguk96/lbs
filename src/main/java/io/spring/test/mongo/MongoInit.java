@@ -23,6 +23,10 @@ public class MongoInit {
         System.out.println("========== INSERT START ==========");
         Dummy dummy = new Dummy();
         Random random = new Random();
+        collection.drop();
+        mongoDatabase.createCollection("dummy");
+        collection = mongoDatabase.getCollection("dummy");
+
 
         for (int i = 1; i <= 1000000; i++) {
             dummy.setId(i);
@@ -32,7 +36,7 @@ public class MongoInit {
             dummy.setCreate_dt();
 
             Document document = new Document();
-            document.append("id", dummy.getId());
+            document.append("_id", dummy.getId());
             document.append("name_code", dummy.getNameCode());
             document.append("address_code", dummy.getAddressCode());
             document.append("use_yn", dummy.getUseYn());
@@ -43,6 +47,5 @@ public class MongoInit {
 
         System.out.println("========== INSERT END ==========");
     }
-
 
 }
