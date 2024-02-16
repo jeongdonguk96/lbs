@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import io.spring.test.entity.Dummy;
+import io.spring.test.mongo.CenterSphereRequestDto;
 import io.spring.test.mongo.MongoService;
 import io.spring.test.mongo.PolygonRequestDto;
 import io.spring.test.mysql.MysqlRepository;
@@ -66,7 +67,12 @@ public class ApiController {
 
     @PostMapping("/mongo/polygon")
     public void useMongoPolygon(@RequestBody PolygonRequestDto polygonRequestDto) {
-        mongoService.getPolyGeo(polygonRequestDto);
+        mongoService.usePolygon(polygonRequestDto);
+    }
+
+    @PostMapping("/mongo/centerSphere")
+    public void useMongoCenterSphere(@RequestBody CenterSphereRequestDto centerSphereRequestDto) {
+        mongoService.useCenterSphere(centerSphereRequestDto);
     }
 
 }

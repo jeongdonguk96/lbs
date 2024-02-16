@@ -9,9 +9,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PolygonRequestDto {
+public class CenterSphereRequestDto {
 
-    private String gu;
-    private List<List<Double>> polygonCoordinates;
-
+    private String place;
+    private List<Double> coordinates;
+    private Double kmRadius;
+    
 }
