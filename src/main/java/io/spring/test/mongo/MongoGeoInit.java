@@ -6,7 +6,6 @@ import com.mongodb.client.result.InsertOneResult;
 import io.spring.test.entity.MongoGeoDummy;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
@@ -17,7 +16,7 @@ public class MongoGeoInit {
 
     private final MongoDatabase mongoDatabase;
 
-    @Bean
+//    @Bean
     public void insert() {
         MongoCollection<Document> collection = mongoDatabase.getCollection("geo");
         collection.drop();

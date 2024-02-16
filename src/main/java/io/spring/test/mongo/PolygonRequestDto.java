@@ -11,5 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class PolygonRequestDto {
 
+    private String gu;
     private List<List<Double>> polygonCoordinates;
 }

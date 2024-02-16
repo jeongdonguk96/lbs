@@ -66,8 +66,6 @@ public class ApiController {
 
     @PostMapping("/mongo/polygon")
     public void useMongoPolygon(@RequestBody PolygonRequestDto polygonRequestDto) {
-        System.out.println("polygonRequestDto = " + polygonRequestDto);
-
         mongoService.getPolyGeo(polygonRequestDto);
     }
 
