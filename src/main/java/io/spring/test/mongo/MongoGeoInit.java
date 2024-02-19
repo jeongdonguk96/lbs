@@ -3,7 +3,7 @@ package io.spring.test.mongo;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.InsertOneResult;
-import io.spring.test.entity.MongoGeoDummy;
+import io.spring.test.sampleEntity.MongoGeoDummy;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.springframework.context.annotation.Configuration;

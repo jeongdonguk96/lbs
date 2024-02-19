@@ -1,4 +1,4 @@
-package io.spring.test.entity;
+package io.spring.test.sampleEntity;
 
 import lombok.*;
 
@@ -10,9 +10,9 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class MongoGeoDummy {
+public class MongoGeoDummy2 {
     private int id;
-    private String nameCode;
+    private int nameCode;
     private Location location;
     private String useYn;
     private Timestamp create_dt;

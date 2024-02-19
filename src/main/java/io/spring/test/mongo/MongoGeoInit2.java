@@ -2,7 +2,7 @@ package io.spring.test.mongo;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import io.spring.test.entity.MongoGeoDummy2;
+import io.spring.test.sampleEntity.MongoGeoDummy2;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +20,7 @@ public class MongoGeoInit2 {
     public void insert() {
         MongoCollection<Document> collection = mongoDatabase.getCollection("geo");
 //        collection.createIndex(new Document("location", "2dsphere"));
+//        collection.createIndex(Indexes.geo2dsphere("location"));
 
         double minLatitude = 37.434068;
         double maxLatitude = 37.684881;

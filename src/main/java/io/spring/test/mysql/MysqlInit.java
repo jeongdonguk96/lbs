@@ -12,7 +12,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class MysqlInit {
 
-    private final MysqlRepository mysqlRepository;
+    private final DummyRepository dummyRepository;
 
 //    @Bean
     public void insert() {
@@ -30,7 +30,7 @@ public class MysqlInit {
 
             dummies.add(dummy);
         }
-        mysqlRepository.saveAll(dummies);
+        dummyRepository.saveAll(dummies);
 
         System.out.println("========== INSERT END ==========");
     }

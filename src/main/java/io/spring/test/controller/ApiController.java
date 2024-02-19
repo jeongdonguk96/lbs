@@ -7,7 +7,8 @@ import io.spring.test.entity.Dummy;
 import io.spring.test.mongo.CenterSphereRequestDto;
 import io.spring.test.mongo.MongoService;
 import io.spring.test.mongo.PolygonRequestDto;
-import io.spring.test.mysql.MysqlRepository;
+import io.spring.test.mysql.DummyRepository;
+import io.spring.test.mysql.MysqlService;
 import io.spring.test.redis.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
@@ -17,15 +18,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 public class ApiController {
 
-    private final MysqlRepository mysqlRepository;
+    private final DummyRepository mysqlRepository;
     private final RedisRepository redisRepository;
     private final MongoDatabase mongoDatabase;
+    private final MysqlService mysqlService;
     private final MongoService mongoService;
 
     long startTime;
@@ -67,12 +70,14 @@ public class ApiController {
 
     @PostMapping("/mongo/polygon")
     public void useMongoPolygon(@RequestBody PolygonRequestDto polygonRequestDto) {
-        mongoService.usePolygon(polygonRequestDto);
+        List<Document> documentList = mongoService.usePolygon(polygonRequestDto);
+        mysqlService.insertMmsData(documentList);
     }
 
     @PostMapping("/mongo/centerSphere")
     public void useMongoCenterSphere(@RequestBody CenterSphereRequestDto centerSphereRequestDto) {
-        mongoService.useCenterSphere(centerSphereRequestDto);
+        List<Document> documentList = mongoService.useCenterSphere(centerSphereRequestDto);
+        mysqlService.insertMmsData(documentList);
     }
 
 }

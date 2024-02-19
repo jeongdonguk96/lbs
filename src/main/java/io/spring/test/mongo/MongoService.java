@@ -2,6 +2,7 @@ package io.spring.test.mongo;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Polygon;
 import com.mongodb.client.model.geojson.Position;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,8 @@ public class MongoService {
     private final MongoDatabase mongoDatabase;
 
     // 폴리곤 좌표를 이용해 폴리곤 내부 데이터를 조회한다.
-    public void usePolygon(PolygonRequestDto polygonRequestDto) {
+//    @Transactional(readOnly = true)
+    public List<Document> usePolygon(PolygonRequestDto polygonRequestDto) {
         long startTime;
         long endTime;
         long timeDiff;
@@ -38,13 +40,13 @@ public class MongoService {
         Document query = new Document("location", new Document("$geoWithin", new Document("$geometry", polygon)));
         System.out.println("요청 구 = " + gu);
 
-        List<Document> result;
-        int pageSize = 1000000;
-        int pageNum = 0;
-        long totalDocuments = 0;
+        List<Document> documentList;
+//        int pageSize = 1000000;
+//        int pageNum = 0;
+//        long totalDocuments = 0;
 
         startTime = System.currentTimeMillis();
-        result = collection.find(query).into(new ArrayList<>());
+        documentList = collection.find(query).into(new ArrayList<>());
         endTime = System.currentTimeMillis();
 
         timeDiff = (endTime - startTime);
@@ -52,14 +54,14 @@ public class MongoService {
 
 //        while (true) {
 //            startTime = System.currentTimeMillis();
-////            result = collection.find(query)
+////            documentList = collection.find(query)
 ////                    .skip(pageNum * pageSize)
 ////                    .limit(pageSize)
 ////                    .into(new ArrayList<>());
 //
-//            totalDocuments += result.size();
+//            totalDocuments += documentList.size();
 //
-//            if (result.size() < pageSize) {
+//            if (documentList.size() < pageSize) {
 //                break;
 //            }
 //            endTime = System.currentTimeMillis();
@@ -76,13 +78,16 @@ public class MongoService {
 //
 //        }
 
-        System.out.println("총 조회수 = " + result.size() + ", TRX 시간 = " + transactionTime + "s");
+        System.out.println("총 조회수 = " + documentList.size() + ", TRX 시간 = " + transactionTime + "s");
         System.out.println();
+
+        return documentList;
     }
 
 
     // 하나의 좌표를 이용해 원 반경 데이터를 조회한다.
-    public void useCenterSphere(CenterSphereRequestDto centerSphereRequestDto) {
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public List<Document> useCenterSphere(CenterSphereRequestDto centerSphereRequestDto) {
         long startTime;
         long endTime;
         long timeDiff;
@@ -96,22 +101,25 @@ public class MongoService {
         double longitude = coordinates.get(0);
         double latitude = coordinates.get(1);
 
-        List<Double> centerPoint = Arrays.asList(longitude, latitude);
+        Position position = new Position(longitude, latitude);
+        Point centerPoint = new Point(position);
         double radiusRadians = kmRadius / 6378.1;
 
         Document query = new Document("location", new Document("$geoWithin", new Document("$centerSphere", Arrays.asList(centerPoint, radiusRadians))));
         System.out.println("요청 위치 = " + place + ", 반경 " + kmRadius + "km");
 
         startTime = System.currentTimeMillis();
-        List<Document> result = collection.find(query).into(new ArrayList<>());
+        List<Document> documentList = collection.find(query).into(new ArrayList<>());
 
         endTime = System.currentTimeMillis();
 
         timeDiff = (endTime - startTime);
         transactionTime = timeDiff / 1000.0;
 
-        System.out.println("총 조회수 = " + result.size() + ", TRX 시간 = " + transactionTime + "s");
+        System.out.println("총 조회수 = " + documentList.size() + ", TRX 시간 = " + transactionTime + "s");
         System.out.println();
+
+        return documentList;
     }
 
 }
