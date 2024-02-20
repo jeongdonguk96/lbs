@@ -8,6 +8,7 @@ import com.mongodb.client.model.geojson.Position;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,7 +87,7 @@ public class MongoService {
 
 
     // 하나의 좌표를 이용해 원 반경 데이터를 조회한다.
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public List<Document> useCenterSphere(CenterSphereRequestDto centerSphereRequestDto) {
         long startTime;
         long endTime;

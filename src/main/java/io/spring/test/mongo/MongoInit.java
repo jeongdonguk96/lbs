@@ -18,6 +18,7 @@ public class MongoInit {
 
 //    @Bean
     public void insert() {
+        // dummy라는 이름의 컬렉션을 가져와 사용한다. 존재하지 않으면 생성한 후 가져온다.
         MongoCollection<Document> collection = mongoDatabase.getCollection("dummy");
 
         System.out.println("========== INSERT START ==========");
@@ -41,6 +42,7 @@ public class MongoInit {
             document.append("address_code", dummy.getAddressCode());
             document.append("use_yn", dummy.getUseYn());
             document.append("create_dt", dummy.getCreate_dt());
+
             InsertOneResult insertOneResult = collection.insertOne(document);
             System.out.println("insertOneResult = " + insertOneResult);
         }

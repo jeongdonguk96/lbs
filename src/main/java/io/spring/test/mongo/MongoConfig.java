@@ -13,17 +13,19 @@ public class MongoConfig {
 
     @Bean
     public MongoDatabase mongoDatabase() {
+        // db url을 설정한다.
         ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017");
 
         // MongoClient를 설정한다.
         MongoClientSettings settings = MongoClientSettings.builder()
-                .applyConnectionString(connectionString)
+                .applyConnectionString(connectionString) // db url을 설정한다.
                 .applyToConnectionPoolSettings(builder -> builder.minSize(10).maxSize(10)) // 커넥션 풀의 크기를 설정한다.
                 .build();
 
         // MongoClient 인스턴스를 생성한다.
         MongoClient mongoClient = MongoClients.create(settings);
 
+        // test라는 이름의 데이터베이스를 가져온다.
         return mongoClient.getDatabase("test");
     }
 }

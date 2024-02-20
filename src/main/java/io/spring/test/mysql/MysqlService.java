@@ -1,63 +1,66 @@
 package io.spring.test.mysql;
 
-import io.spring.test.entity.Geospatial;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class MysqlService {
 
-    private final GeospatialRepository geospatialRepository;
+    private final DataSource dataSource;
 
     @Transactional
-    public void insertMmsData(List<Document> documentList) {
+    public void insertMmsData(List<Document> documentList) throws SQLException {
         long startTime;
         long endTime;
         long timeDiff;
         double transactionTime;
 
-        List<Geospatial> geospatialList = new ArrayList<>();
+        String sql = "INSERT INTO geospatial" +
+                " (id, name_code, type, coordinates, use_yn, create_dt)" +
+                " VALUES (?, ?, ?, ?, ?, ?)";
 
         startTime = System.currentTimeMillis();
-        for (Document document : documentList) {
-            Geospatial geospatial = convertDocumentToGeospatial(document);
-            geospatialList.add(geospatial);
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                for (Document document : documentList) {
+                    preparedStatement.setInt(1, document.getInteger("_id"));
+                    preparedStatement.setInt(2, document.getInteger("name_code"));
+                    Document locationDocument = (Document) document.get("location");
+                    preparedStatement.setString(3, locationDocument.getString("type"));
+                    preparedStatement.setString(4, locationDocument.get("coordinates", List.class).toString());
+                    preparedStatement.setString(5, document.getString("use_yn"));
+                    Object createDateObject = document.get("create_dt");
+                    java.util.Date createDate = (java.util.Date) createDateObject;
+                    java.sql.Date sqlTimestamp = (java.sql.Date) createDate;
+                    preparedStatement.setDate(6, sqlTimestamp);
+
+                    preparedStatement.addBatch();
+                }
+
+                preparedStatement.executeBatch();
+                connection.commit();
+                endTime = System.currentTimeMillis();
+
+                timeDiff = (endTime - startTime);
+                transactionTime = timeDiff / 1000.0;
+                System.out.println("배치 INSERT TRX 시간 = " + transactionTime + "s");
+                System.out.println();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                connection.rollback();
+            }
         }
-        endTime = System.currentTimeMillis();
-
-        timeDiff = (endTime - startTime);
-        transactionTime = timeDiff / 1000.0;
-
-        System.out.println("Geospatial 객체 수 = " + geospatialList.size() + ", document -> entity 매핑 시간 = " + transactionTime + "s");
-
-        startTime = System.currentTimeMillis();
-        geospatialRepository.saveAll(geospatialList);
-        endTime = System.currentTimeMillis();
-
-        timeDiff = (endTime - startTime);
-        transactionTime = timeDiff / 1000.0;
-        System.out.println("영속화 TRX 시간 = " + transactionTime + "s");
-        System.out.println();
-    }
-
-    public Geospatial convertDocumentToGeospatial(Document document) {
-        Geospatial geospatial = new Geospatial();
-        geospatial.setId(document.getInteger("_id"));
-        geospatial.setNameCode(document.getInteger("name_code"));
-        Document locationDocument = (Document) document.get("location");
-        String type = locationDocument.getString("type");
-        String coordinates = locationDocument.get("coordinates", List.class).toString();
-        geospatial.setLocation(new Geospatial.Location(type, coordinates));
-        geospatial.setUseYn(document.getString("use_yn"));
-        geospatial.setCreate_dt(document.getDate("create_dt"));
-
-        return geospatial;
     }
 
 }

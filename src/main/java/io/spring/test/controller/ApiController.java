@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,13 +70,13 @@ public class ApiController {
     }
 
     @PostMapping("/mongo/polygon")
-    public void useMongoPolygon(@RequestBody PolygonRequestDto polygonRequestDto) {
+    public void useMongoPolygon(@RequestBody PolygonRequestDto polygonRequestDto) throws SQLException {
         List<Document> documentList = mongoService.usePolygon(polygonRequestDto);
         mysqlService.insertMmsData(documentList);
     }
 
     @PostMapping("/mongo/centerSphere")
-    public void useMongoCenterSphere(@RequestBody CenterSphereRequestDto centerSphereRequestDto) {
+    public void useMongoCenterSphere(@RequestBody CenterSphereRequestDto centerSphereRequestDto) throws SQLException {
         List<Document> documentList = mongoService.useCenterSphere(centerSphereRequestDto);
         mysqlService.insertMmsData(documentList);
     }

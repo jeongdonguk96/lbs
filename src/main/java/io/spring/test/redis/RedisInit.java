@@ -3,9 +3,10 @@ package io.spring.test.redis;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.spring.test.entity.Dummy;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Configuration
@@ -18,6 +19,7 @@ public class RedisInit {
     public void insert() throws JsonProcessingException {
         System.out.println("========== INSERT START ==========");
         Dummy dummy = new Dummy();
+        List<Dummy> dummyList = new ArrayList<>();
         Random random = new Random();
 
         for (int i = 1; i <= 1000000; i++) {
@@ -26,8 +28,10 @@ public class RedisInit {
             dummy.setAddressCode(random.nextInt(90000) + 10000);
             dummy.setUseYn("Y");
             dummy.setCreate_dt();
-            redisRepository.insert(dummy);
+            dummyList.add(dummy);
+//            redisRepository.insert(dummy);
         }
+        redisRepository.insertMany(dummyList);
 
         System.out.println("========== INSERT END ==========");
     }
