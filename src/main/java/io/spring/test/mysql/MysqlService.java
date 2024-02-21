@@ -23,14 +23,20 @@ public class MysqlService {
         long endTime;
         long timeDiff;
         double transactionTime;
+        int count = 0;
 
         String sql = "INSERT INTO geospatial" +
                 " (id, name_code, type, coordinates, use_yn, create_dt)" +
                 " VALUES (?, ?, ?, ?, ?, ?)";
 
+        String sql2 = "DELETE FROM geospatial";
+
         startTime = System.currentTimeMillis();
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
+            PreparedStatement deletePreparedStatement = connection.prepareStatement(sql2);
+            deletePreparedStatement.execute();
+            connection.commit();
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 for (Document document : documentList) {
@@ -42,10 +48,16 @@ public class MysqlService {
                     preparedStatement.setString(5, document.getString("use_yn"));
                     Object createDateObject = document.get("create_dt");
                     java.util.Date createDate = (java.util.Date) createDateObject;
-                    java.sql.Date sqlTimestamp = (java.sql.Date) createDate;
-                    preparedStatement.setDate(6, sqlTimestamp);
+                    preparedStatement.setDate(6, new java.sql.Date(createDate.getTime()));
 
                     preparedStatement.addBatch();
+                    count++;
+
+                    if (count % 100000 == 0) {
+                        preparedStatement.executeBatch();
+                        connection.commit();
+                        System.out.println("10만건 데이터 처리 완료");
+                    }
                 }
 
                 preparedStatement.executeBatch();

@@ -22,6 +22,7 @@ public class MongoGeoInit2 {
 //        collection.createIndex(new Document("location", "2dsphere"));
 //        collection.createIndex(Indexes.geo2dsphere("location"));
 
+        // 최소/최대 위도/경도를 설정한다.
         double minLatitude = 37.434068;
         double maxLatitude = 37.684881;
         double minLongitude = 126.791833;
@@ -37,9 +38,12 @@ public class MongoGeoInit2 {
             dummy.setUseYn("Y");
             dummy.setCreate_dt();
 
+            // 최소 경도와 최대 경도 사이에서 랜덤한 경도값을 추출한다.
+            // 최소 위도와 최대 위도 사이에서 랜덤한 위도값을 추출한다.
             double latitude = minLatitude + (maxLatitude - minLatitude) * random.nextDouble();
             double longitude = minLongitude + (maxLongitude - minLongitude) * random.nextDouble();
 
+            // 소수점 6자리까지만 추출해 사용한다.
             latitude = Double.parseDouble(String.format("%.6f", latitude));
             longitude = Double.parseDouble(String.format("%.6f", longitude));
 

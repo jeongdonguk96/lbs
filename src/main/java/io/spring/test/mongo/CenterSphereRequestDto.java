@@ -13,6 +13,6 @@ public class CenterSphereRequestDto {
 
     private String place;
     private List<Double> coordinates;
-    private Double kmRadius;
+    private double kmRadius;
     
 }
