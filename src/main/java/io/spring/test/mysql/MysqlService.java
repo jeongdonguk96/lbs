@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -18,25 +19,22 @@ public class MysqlService {
     private final DataSource dataSource;
 
     @Transactional
-    public void insertMmsData(List<Document> documentList) throws SQLException {
+    public int insertMmsData(List<Document> documentList) throws SQLException {
         long startTime;
         long endTime;
         long timeDiff;
         double transactionTime;
+
         int count = 0;
+        int totalInsertedCount = 0;
 
         String sql = "INSERT INTO geospatial" +
                 " (id, name_code, type, coordinates, use_yn, create_dt)" +
                 " VALUES (?, ?, ?, ?, ?, ?)";
 
-        String sql2 = "DELETE FROM geospatial";
-
         startTime = System.currentTimeMillis();
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
-            PreparedStatement deletePreparedStatement = connection.prepareStatement(sql2);
-            deletePreparedStatement.execute();
-            connection.commit();
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 for (Document document : documentList) {
@@ -54,14 +52,16 @@ public class MysqlService {
                     count++;
 
                     if (count % 100000 == 0) {
-                        preparedStatement.executeBatch();
+                        int[] insertedCount = preparedStatement.executeBatch();
                         connection.commit();
+                        totalInsertedCount += Arrays.stream(insertedCount).sum();
                         System.out.println("10만건 데이터 처리 완료");
                     }
                 }
 
-                preparedStatement.executeBatch();
+                int[] insertedCount = preparedStatement.executeBatch();
                 connection.commit();
+                totalInsertedCount += Arrays.stream(insertedCount).sum();
                 endTime = System.currentTimeMillis();
 
                 timeDiff = (endTime - startTime);
@@ -73,6 +73,8 @@ public class MysqlService {
                 connection.rollback();
             }
         }
+
+        return totalInsertedCount;
     }
 
 }

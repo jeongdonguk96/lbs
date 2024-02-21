@@ -70,15 +70,15 @@ public class ApiController {
     }
 
     @PostMapping("/mongo/polygon")
-    public void useMongoPolygon(@RequestBody PolygonRequestDto polygonRequestDto) throws SQLException {
+    public int useMongoPolygon(@RequestBody PolygonRequestDto polygonRequestDto) throws SQLException {
         List<Document> documentList = mongoService.usePolygon(polygonRequestDto);
-        mysqlService.insertMmsData(documentList);
+        return mysqlService.insertMmsData(documentList);
     }
 
     @PostMapping("/mongo/centerSphere")
-    public void useMongoCenterSphere(@RequestBody CenterSphereRequestDto centerSphereRequestDto) throws SQLException {
+    public int useMongoCenterSphere(@RequestBody CenterSphereRequestDto centerSphereRequestDto) throws SQLException {
         List<Document> documentList = mongoService.useCenterSphere(centerSphereRequestDto);
-        mysqlService.insertMmsData(documentList);
+        return mysqlService.insertMmsData(documentList);
     }
 
 }
