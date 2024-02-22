@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.test.mongo.CenterSphereRequestDto;
 import io.spring.test.mongo.PolygonRequestDto;
 import io.spring.test.mysql.GeospatialRepository;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -39,8 +37,6 @@ class ApiControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     @DisplayName(value = "Polygon으로 mongo 조회 후 mysql 삽입 테스트")
     void useMongoPolygon() throws Exception {
         // given
@@ -93,8 +89,6 @@ class ApiControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     @DisplayName(value = "CenterSphere로 mongo 조회 후 mysql 삽입 테스트")
     void useMongoCenterSphere() throws Exception {
         // given
