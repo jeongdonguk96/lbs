@@ -1,6 +1,7 @@
 package io.spring.test.mysql;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MysqlService {
@@ -51,23 +53,22 @@ public class MysqlService {
                     preparedStatement.addBatch();
                     count++;
 
-                    if (count % 100000 == 0) {
+                    if (count % 2000 == 0) {
                         int[] insertedCount = preparedStatement.executeBatch();
-                        connection.commit();
+                        preparedStatement.clearBatch();
                         totalInsertedCount += Arrays.stream(insertedCount).sum();
-                        System.out.println("10만건 데이터 처리 완료");
+                        log.info("2천 건 데이터 처리 완료");
                     }
                 }
 
                 int[] insertedCount = preparedStatement.executeBatch();
-                connection.commit();
+                preparedStatement.clearBatch();
                 totalInsertedCount += Arrays.stream(insertedCount).sum();
                 endTime = System.currentTimeMillis();
 
                 timeDiff = (endTime - startTime);
                 transactionTime = timeDiff / 1000.0;
-                System.out.println("배치 INSERT TRX 시간 = " + transactionTime + "s");
-                System.out.println();
+                log.info("총 {}건 처리 완료, BATCH INSERT TRX 시간 = {}", totalInsertedCount, transactionTime + System.lineSeparator());
             } catch (SQLException e) {
                 e.printStackTrace();
                 connection.rollback();

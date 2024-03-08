@@ -93,7 +93,6 @@ class MysqlServiceTest {
 
         // then
         assertThat(totalInsertedCount).isEqualTo(34481);
-
     }
 
 }

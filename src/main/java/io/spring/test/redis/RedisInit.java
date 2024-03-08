@@ -1,13 +1,11 @@
 package io.spring.test.redis;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.spring.test.entity.Dummy;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Configuration
 @RequiredArgsConstructor
@@ -15,11 +13,17 @@ public class RedisInit {
 
     private final RedisRepository redisRepository;
 
-//    @Bean
-    public void insert() throws JsonProcessingException {
-        System.out.println("========== INSERT START ==========");
-        Dummy dummy = new Dummy();
+    long startTime;
+    long endTime;
+    long timeDiff;
+    double transactionTime;
+
+    @Bean
+    public void insert() {
+        startTime = System.currentTimeMillis();
         List<Dummy> dummyList = new ArrayList<>();
+        Dummy dummy = new Dummy();
+        System.out.println("========== INSERT START ==========");
         Random random = new Random();
 
         for (int i = 1; i <= 1000000; i++) {
@@ -29,9 +33,14 @@ public class RedisInit {
             dummy.setUseYn("Y");
             dummy.setCreate_dt();
             dummyList.add(dummy);
-//            redisRepository.insert(dummy);
         }
+
         redisRepository.insertMany(dummyList);
+
+        endTime = System.currentTimeMillis();
+        timeDiff = (endTime - startTime);
+        transactionTime = timeDiff / 1000.0;
+        System.out.println("========== REDIS TRX TIME = { " + transactionTime + "}s ==========");
 
         System.out.println("========== INSERT END ==========");
     }

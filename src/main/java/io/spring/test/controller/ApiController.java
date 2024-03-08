@@ -1,5 +1,6 @@
 package io.spring.test.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -53,6 +54,11 @@ public class ApiController {
     @GetMapping("/redis")
     public void useRedis(@Param("id") int id) {
         redisRepository.find(String.valueOf(id));
+    }
+
+    @GetMapping("/redis/all")
+    public void useRedis() throws JsonProcessingException {
+        redisRepository.findAll();
     }
 
     @GetMapping("/mongo")
