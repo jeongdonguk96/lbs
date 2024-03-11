@@ -1,9 +1,9 @@
 package io.spring.test.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.opencsv.exceptions.CsvValidationException;
 import io.spring.test.entity.Dummy;
 import io.spring.test.mongo.CenterSphereRequestDto;
 import io.spring.test.mongo.MongoService;
@@ -11,6 +11,8 @@ import io.spring.test.mongo.PolygonRequestDto;
 import io.spring.test.mysql.DummyRepository;
 import io.spring.test.mysql.MysqlService;
 import io.spring.test.redis.RedisRepository;
+import io.spring.test.sampleEntity.RedisGeoDummy;
+import io.spring.test.util.CsvUtil;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +61,35 @@ public class ApiController {
     }
 
     @GetMapping("/redis/all")
-    public void useRedis() throws JsonProcessingException {
+    public void useRedis() {
         redisRepository.findAll();
+    }
+
+    @GetMapping("/csv/write")
+    public void writeCsv() throws IOException {
+        CsvUtil.writeCsv();
+    }
+
+    @GetMapping("/csv/read")
+    public void readCsv() throws CsvValidationException, IOException {
+        String filePath = "C:\\Users\\nb18-03hp\\IdeaProjects\\test\\user_data.csv";
+        File file = new File(filePath);
+        List<String[]> readFile = CsvUtil.readCsv(file);
+    }
+
+    @GetMapping("/csv/mapping")
+    public void mapCsvData() throws CsvValidationException, IOException {
+        String filePath = "C:\\Users\\nb18-03hp\\IdeaProjects\\test\\user_data.csv";
+        File file = new File(filePath);
+        List<String[]> readFile = CsvUtil.readCsv(file);
+
+        List<String> keyList = redisRepository.findAllRedisKey();
+        List<Object> valueList = redisRepository.findAllRedisValue(keyList);
+        List<RedisGeoDummy> objectList = redisRepository.stringToDummy(valueList);
+
+
+//        ServiceUtil.processUserData()
+
     }
 
     @GetMapping("/mongo")

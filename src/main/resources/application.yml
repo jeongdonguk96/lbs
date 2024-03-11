@@ -13,6 +13,9 @@ spring:
 
   data:
     redis:
+#      port: 27017
+#      host: 192.168.10.44
+#      password: 1004
       port: 6379
       host: localhost
       password:

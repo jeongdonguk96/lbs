@@ -1,11 +1,12 @@
 package io.spring.test.redis;
 
-import io.spring.test.entity.Dummy;
+import io.spring.test.sampleEntity.RedisGeoDummy;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 @Configuration
 @RequiredArgsConstructor
@@ -18,18 +19,23 @@ public class RedisInit {
     long timeDiff;
     double transactionTime;
 
-    @Bean
+//    @Bean
     public void insert() {
         startTime = System.currentTimeMillis();
-        List<Dummy> dummyList = new ArrayList<>();
-        Dummy dummy = new Dummy();
         System.out.println("========== INSERT START ==========");
+        List<RedisGeoDummy> dummyList = new ArrayList<>();
         Random random = new Random();
 
+        double baseLongitude = 37.0;
+        double baseLatitude = 126.0;
+
         for (int i = 1; i <= 1000000; i++) {
+            RedisGeoDummy dummy = new RedisGeoDummy();
             dummy.setId(i);
-            dummy.setNameCode(random.nextInt(90000) + 10000);
-            dummy.setAddressCode(random.nextInt(90000) + 10000);
+            dummy.setNameCode(i);
+            double longitude = baseLongitude + random.nextDouble(9) + 10;
+            double latitude = baseLatitude + random.nextDouble(9) + 10;
+            dummy.setLocation(latitude, longitude);
             dummy.setUseYn("Y");
             dummy.setCreate_dt();
             dummyList.add(dummy);
@@ -41,7 +47,6 @@ public class RedisInit {
         timeDiff = (endTime - startTime);
         transactionTime = timeDiff / 1000.0;
         System.out.println("========== REDIS TRX TIME = { " + transactionTime + "}s ==========");
-
         System.out.println("========== INSERT END ==========");
     }
 
