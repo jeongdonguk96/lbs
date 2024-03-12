@@ -15,6 +15,7 @@ import io.spring.test.sampleEntity.RedisGeoDummy;
 import io.spring.test.util.CsvUtil;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
+import org.json.simple.parser.ParseException;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -78,7 +79,7 @@ public class ApiController {
     }
 
     @GetMapping("/csv/mapping")
-    public void mapCsvData() throws CsvValidationException, IOException {
+    public void mapCsvData() throws CsvValidationException, IOException, ParseException {
         String filePath = "C:\\Users\\nb18-03hp\\IdeaProjects\\test\\user_data.csv";
         File file = new File(filePath);
         List<String[]> readFile = CsvUtil.readCsv(file);

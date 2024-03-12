@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.test.entity.Dummy;
 import io.spring.test.sampleEntity.RedisGeoDummy;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -149,11 +148,12 @@ public class RedisRepository {
 
         for (Object value : valueList) {
             JSONObject json = (JSONObject) parser.parse(String.valueOf(value));
-            int id = (int) json.get("id");
-            int nameCode = (int) json.get("nameCode");
-            JSONArray location = (JSONArray) json.get("location");
-            double latitude = (double) location.get(0);
-            double longitude = (double) location.get(1);
+            long longId = (long) json.get("id");
+            int id = (int) longId;
+            long longNameCode = (long) json.get("nameCode");
+            int nameCode = (int) longNameCode;
+            double latitude = (double) json.get("latitude");
+            double longitude = (double) json.get("longitude");
             RedisGeoDummy dummy = new RedisGeoDummy(id, nameCode, latitude, longitude);
             redisGeoDummyList.add(dummy);
         }
@@ -161,7 +161,7 @@ public class RedisRepository {
         endTime = System.currentTimeMillis();
         timeDiff = (endTime - startTime);
         transactionTime = timeDiff / 1000.0;
-        System.out.println("========== MAPPING TRX TIME = { " + transactionTime + "}s ==========");
+        System.out.println("========== JAVA INSTANCE TRX TIME = { " + transactionTime + "}s ==========");
         System.out.println("dataList size = " + redisGeoDummyList.size());
         System.out.println("redisGeoDummyList 1 = " + redisGeoDummyList.get(0));
         System.out.println();

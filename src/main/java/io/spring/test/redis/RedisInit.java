@@ -33,9 +33,10 @@ public class RedisInit {
             RedisGeoDummy dummy = new RedisGeoDummy();
             dummy.setId(i);
             dummy.setNameCode(i);
-            double longitude = baseLongitude + random.nextDouble(9) + 10;
             double latitude = baseLatitude + random.nextDouble(9) + 10;
-            dummy.setLocation(latitude, longitude);
+            double longitude = baseLongitude + random.nextDouble(9) + 10;
+            dummy.setLatitude(latitude);
+            dummy.setLongitude(longitude);
             dummy.setUseYn("Y");
             dummy.setCreate_dt();
             dummyList.add(dummy);
