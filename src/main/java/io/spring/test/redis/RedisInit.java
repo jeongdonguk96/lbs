@@ -26,8 +26,8 @@ public class RedisInit {
         List<RedisGeoDummy> dummyList = new ArrayList<>();
         Random random = new Random();
 
-        double baseLongitude = 37.0;
-        double baseLatitude = 126.0;
+        double baseLatitude = 37.0;
+        double baseLongitude = 126.0;
 
         for (int i = 1; i <= 1000000; i++) {
             RedisGeoDummy dummy = new RedisGeoDummy();

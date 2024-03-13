@@ -54,14 +54,16 @@ public class CsvUtil {
         try (CSVReader reader = new CSVReader(new FileReader(file))) {
             String[] line;
             while ((line = reader.readNext()) != null) {
-                records.add(line);
+                String[] paddedLine = Arrays.copyOf(line, 5);
+                records.add(paddedLine);
             }
         }
         endTime = System.currentTimeMillis();
         timeDiff = (endTime - startTime);
         transactionTime = timeDiff / 1000.0;
-        System.out.println("========== CSV READ TRX TIME = { " + transactionTime + "}s ==========");
         System.out.println("csv read file size = " + records.size() + ", file(0) = " + Arrays.toString(records.get(0)));
+        System.out.println("readCsv() DONE");
+        System.out.println("========== CSV READ TRX TIME = { " + transactionTime + "}s ==========");
         System.out.println();
 
         return records;

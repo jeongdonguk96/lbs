@@ -5,9 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.test.entity.Dummy;
 import io.spring.test.sampleEntity.RedisGeoDummy;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -49,7 +46,7 @@ public class RedisRepository {
         redisTemplate4.executePipelined((RedisCallback<?>) connection -> {
             for (RedisGeoDummy dummy : dummyList) {
                 String key = String.valueOf(dummy.getId());
-                String value = null;
+                String value;
                 try {
                     value = objectMapper.writeValueAsString(dummy);
                 } catch (JsonProcessingException e) {
@@ -115,14 +112,15 @@ public class RedisRepository {
         endTime = System.currentTimeMillis();
         timeDiff = (endTime - startTime);
         transactionTime = timeDiff / 1000.0;
-        System.out.println("========== REDIS TRX TIME = { " + transactionTime + "}s ==========");
         System.out.println("REDIS SELECT SIZE = " + Objects.requireNonNull(keys).size());
+        System.out.println("findAllRedisKey() DONE");
+        System.out.println("========== REDIS KEY TRX TIME = { " + transactionTime + "}s ==========");
         System.out.println();
 
         return new ArrayList<>(Objects.requireNonNull(keys));
     }
 
-    // redis에서 키로 전체 데이터의 밸류를 조회한다.
+    // redis에서 키로 데이터의 밸류를 조회한다.
     public List<Object> findAllRedisValue(List<String> keyList) {
         startTime = System.currentTimeMillis();
         List<Object> valueList = Objects.requireNonNull(redisTemplate4.opsForValue().multiGet(keyList)).stream()
@@ -133,41 +131,12 @@ public class RedisRepository {
         endTime = System.currentTimeMillis();
         timeDiff = (endTime - startTime);
         transactionTime = timeDiff / 1000.0;
-        System.out.println("========== MAPPING TRX TIME = { " + transactionTime + "}s ==========");
         System.out.println("dataList size = " + valueList.size());
+        System.out.println("findAllRedisValue() DONE");
+        System.out.println("========== REDIS VALUE TRX TIME = { " + transactionTime + "}s ==========");
         System.out.println();
 
         return valueList;
     }
-
-    // redis에서 조회한 value를 객체로 변환한다.
-    public List<RedisGeoDummy> stringToDummy(List<Object> valueList) throws ParseException {
-        startTime = System.currentTimeMillis();
-        List<RedisGeoDummy> redisGeoDummyList = new ArrayList<>();
-        JSONParser parser = new JSONParser();
-
-        for (Object value : valueList) {
-            JSONObject json = (JSONObject) parser.parse(String.valueOf(value));
-            long longId = (long) json.get("id");
-            int id = (int) longId;
-            long longNameCode = (long) json.get("nameCode");
-            int nameCode = (int) longNameCode;
-            double latitude = (double) json.get("latitude");
-            double longitude = (double) json.get("longitude");
-            RedisGeoDummy dummy = new RedisGeoDummy(id, nameCode, latitude, longitude);
-            redisGeoDummyList.add(dummy);
-        }
-
-        endTime = System.currentTimeMillis();
-        timeDiff = (endTime - startTime);
-        transactionTime = timeDiff / 1000.0;
-        System.out.println("========== JAVA INSTANCE TRX TIME = { " + transactionTime + "}s ==========");
-        System.out.println("dataList size = " + redisGeoDummyList.size());
-        System.out.println("redisGeoDummyList 1 = " + redisGeoDummyList.get(0));
-        System.out.println();
-
-        return redisGeoDummyList;
-    }
-
 
 }

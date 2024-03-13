@@ -11,11 +11,10 @@ import io.spring.test.mongo.PolygonRequestDto;
 import io.spring.test.mysql.DummyRepository;
 import io.spring.test.mysql.MysqlService;
 import io.spring.test.redis.RedisRepository;
-import io.spring.test.sampleEntity.RedisGeoDummy;
 import io.spring.test.util.CsvUtil;
+import io.spring.test.util.ServiceUtil;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
-import org.json.simple.parser.ParseException;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -79,18 +79,15 @@ public class ApiController {
     }
 
     @GetMapping("/csv/mapping")
-    public void mapCsvData() throws CsvValidationException, IOException, ParseException {
+    public void mapCsvData() throws CsvValidationException, IOException {
         String filePath = "C:\\Users\\nb18-03hp\\IdeaProjects\\test\\user_data.csv";
         File file = new File(filePath);
         List<String[]> readFile = CsvUtil.readCsv(file);
 
         List<String> keyList = redisRepository.findAllRedisKey();
         List<Object> valueList = redisRepository.findAllRedisValue(keyList);
-        List<RedisGeoDummy> objectList = redisRepository.stringToDummy(valueList);
-
-
-//        ServiceUtil.processUserData()
-
+        Map<Long, Double[]> coordinatesMap = ServiceUtil.stringToDummyMap(valueList);
+        readFile = ServiceUtil.mappingData(readFile, coordinatesMap);
     }
 
     @GetMapping("/mongo")
