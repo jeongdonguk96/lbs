@@ -4,15 +4,17 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import io.spring.lbs.vo.MongoGeoDummy2;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 import java.util.Random;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class MongoGeoInit2 {
+public class MongoPeopleGeoInit {
 
     private final MongoDatabase mongoDatabase;
 

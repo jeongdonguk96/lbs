@@ -5,14 +5,16 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.InsertOneResult;
 import io.spring.lbs.vo.MongoGeoDummy;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class MongoGeoInit {
+public class MongoLandmarkGeoInit {
 
     private final MongoDatabase mongoDatabase;
 

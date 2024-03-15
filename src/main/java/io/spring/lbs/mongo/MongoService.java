@@ -4,7 +4,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.geojson.Polygon;
 import com.mongodb.client.model.geojson.Position;
+import io.spring.lbs.aop.ServiceTrace;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,20 +15,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MongoService {
 
     private final MongoDatabase mongoDatabase;
 
+
     // 폴리곤 좌표를 이용해 폴리곤 내부 데이터를 조회한다.
+    @ServiceTrace
     @Transactional(readOnly = true)
     public List<Document> usePolygon(PolygonRequestDto polygonRequestDto) {
-        long startTime;
-        long endTime;
-        long timeDiff;
-        double transactionTime;
-
         // 사용할 컬렉션의 데이터를 가져온다.
         MongoCollection<Document> collection = mongoDatabase.getCollection("geo");
 
@@ -46,62 +46,16 @@ public class MongoService {
 
         // 위 위치 좌표로 지리 공간 쿼리로 생성한다.
         Document query = new Document("location", new Document("$geoWithin", new Document("$geometry", polygon)));
-        System.out.println("요청 구 = " + gu);
 
-        List<Document> documentList;
-//        int pageSize = 1000000;
-//        int pageNum = 0;
-//        long totalDocuments = 0;
-
-        // 쿼리를 실행한다.
-        startTime = System.currentTimeMillis();
-        documentList = collection.find(query).into(new ArrayList<>());
-        endTime = System.currentTimeMillis();
-
-        timeDiff = (endTime - startTime);
-        transactionTime = timeDiff / 1000.0;
-
-//        while (true) {
-//            startTime = System.currentTimeMillis();
-////            documentList = collection.find(query)
-////                    .skip(pageNum * pageSize)
-////                    .limit(pageSize)
-////                    .into(new ArrayList<>());
-//
-//            totalDocuments += documentList.size();
-//
-//            if (documentList.size() < pageSize) {
-//                break;
-//            }
-//            endTime = System.currentTimeMillis();
-//
-//            timeDiff = (endTime - startTime);
-//            transactionTime = timeDiff / 1000.0;
-//
-//            pageNum++;
-//            System.out.println(pageNum + "차 데이터 조회, 총 조회수 = " + totalDocuments + ", TRX 시간 = " + transactionTime + "s");
-//
-//            if (totalDocuments >= 3000000) {
-//                break;
-//            }
-//
-//        }
-
-        System.out.println("총 조회수 = " + documentList.size() + ", TRX 시간 = " + transactionTime + "s");
-        System.out.println();
-
-        return documentList;
+        // 쿼리를 실행해 반환한다.
+        return collection.find(query).into(new ArrayList<>());
     }
 
 
     // 하나의 좌표를 이용해 원 반경 데이터를 조회한다.
+    @ServiceTrace
     @Transactional(readOnly = true)
     public List<Document> useCenterSphere(CenterSphereRequestDto centerSphereRequestDto) {
-        long startTime;
-        long endTime;
-        long timeDiff;
-        double transactionTime;
-
         // 사용할 컬렉션의 데이터를 가져온다.
         MongoCollection<Document> collection = mongoDatabase.getCollection("geo");
 
@@ -113,21 +67,9 @@ public class MongoService {
 
         // 위 데이터로 지리 공간 쿼리로 생성한다.
         Document query = new Document("location", new Document("$geoWithin", new Document("$centerSphere", Arrays.asList(coordinates, radiusRadians))));
-        System.out.println("요청 위치 = " + place + ", 반경 " + kmRadius + "km");
 
-        // 쿼리를 실행한다.
-        startTime = System.currentTimeMillis();
-        List<Document> documentList = collection.find(query).into(new ArrayList<>());
-
-        endTime = System.currentTimeMillis();
-
-        timeDiff = (endTime - startTime);
-        transactionTime = timeDiff / 1000.0;
-
-        System.out.println("총 조회수 = " + documentList.size() + ", TRX 시간 = " + transactionTime + "s");
-        System.out.println();
-
-        return documentList;
+        // 쿼리를 실행해 반환한다.
+        return collection.find(query).into(new ArrayList<>());
     }
 
 }

@@ -50,7 +50,7 @@ public class MysqlInit {
 
                     preparedStatement.addBatch();
 
-                    if (i % 1000 == 0) {
+                    if (i % 2000 == 0) {
                         preparedStatement.executeBatch();
                         preparedStatement.clearBatch();
                     }

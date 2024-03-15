@@ -2,12 +2,14 @@ package io.spring.lbs.redis;
 
 import io.spring.lbs.vo.RedisGeoDummy;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class RedisInit {
